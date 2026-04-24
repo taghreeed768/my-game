@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>لعبتي</title>
+
+<style>
+    body {
+        text-align: center;
+        font-family: Arial;
+        background: #111;
+        color: white;
+    }
+
+    #gameArea {
+        width: 400px;
+        height: 400px;
+        background: #222;
+        margin: 20px auto;
+        position: relative;
+        border: 2px solid white;
+        overflow: hidden;
+    }
+
+    #box {
+        width: 50px;
+        height: 50px;
+        background: red;
+        position: absolute;
+        display: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+</style>
+
+</head>
+<body>
+
+<h1>🎮 اضرب المربع</h1>
+<p>Score: <span id="score">0</span></p>
+<p>Time: <span id="time">30</span></p>
+
+<button onclick="startGame()">ابدأ اللعبة</button>
+
+<div id="gameArea">
+    <div id="box"></div>
+</div>
+
+<audio id="hitSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
+
+<script>
+let score = 0;
+let time = 30;
+let gameInterval;
+let timer;
+let speed = 6789;
+
+const box = document.getElementById("box");
+const scoreText = document.getElementById("score");
+const timeText = document.getElementById("time");
+const hitSound = document.getElementById("hitSound");
+
+function startGame() {
+    clearInterval(gameInterval);
+    clearInterval(timer);
+
+    score = 0;
+    time = 30;
+    speed = 6789;
+
+    scoreText.innerText = score;
+    timeText.innerText = time;
+
+    box.style.display = "block";
+
+    moveBox();
+
+    gameInterval = setInterval(moveBox, speed);
+
+    timer = setInterval(() => {
+        time--;
+        timeText.innerText = time;
+
+        // زيادة الصعوبة
+        if (time % 5 === 0 && speed > 300) {
+            speed -= 100;
+            clearInterval(gameInterval);
+            gameInterval = setInterval(moveBox, speed);
+        }
+
+        if (time <= 0) {
+            clearInterval(gameInterval);
+            clearInterval(timer);
+            box.style.display = "none";
+            alert("🔥 خلص الوقت! نتيجتك: " + score);
+        }
+    }, 1000);
+}
+
+function moveBox() {
+    let x = Math.random() * 350;
+    let y = Math.random() * 350;
+
+    box.style.left = x + "px";
+    box.style.top = y + "px";
+
+    // تغيير لون عشوائي
+    box.style.background = `hsl(${Math.random()*360}, 70%, 50%)`;
+}
+
+box.onclick = function() {
+    score++;
+    scoreText.innerText = score;
+
+    hitSound.currentTime = 0;
+    hitSound.play();
+
+    moveBox();
+};
+</script>
+
+</body>
+</html>
